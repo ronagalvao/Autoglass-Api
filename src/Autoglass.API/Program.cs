@@ -6,9 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddProductContext(builder.Configuration)
-    .AddServices();
-
-AutoMapperConfig.Configure();
+    .AddServices()
+    .AddMappers();
 
 builder.Services.AddControllers();
 

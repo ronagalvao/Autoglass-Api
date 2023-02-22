@@ -5,11 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Autoglass.Application.Extensions
 {
-    public static class AutoMapperConfig
+    public static class AutoMapperExtension
     {
-        public static IServiceCollection Services { get; private set; }
-
-        public static void Configure()
+        public static void AddMappers(this IServiceCollection services)
         {
             var mapperConfig = new MapperConfiguration(cfg =>
             {
@@ -18,7 +16,7 @@ namespace Autoglass.Application.Extensions
             });
 
             IMapper mapper = mapperConfig.CreateMapper();
-            Services.AddSingleton(mapper);
+            services.AddSingleton(mapper);
         }
     }
 }
