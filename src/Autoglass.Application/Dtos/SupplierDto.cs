@@ -1,0 +1,11 @@
+namespace Autoglass.Application.Dtos
+{
+    public class SupplierDto
+    {
+        public int Id { get; set; }
+        public string? Code { get; set; }
+        public string? Description { get; set; }
+        public string? CompanyDocument { get; set; }
+    }
+
+}
