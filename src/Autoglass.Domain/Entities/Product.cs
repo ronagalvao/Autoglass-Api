@@ -9,7 +9,7 @@ public class Product
     public DateTime ExpirationDate { get; set; }
     public int SupplierId { get; set; }
 
-    virtual public Supplier? Vendor { get; set; }
+    virtual public Supplier? Supplier { get; set; }
 }
 
 public enum ProductStatus
