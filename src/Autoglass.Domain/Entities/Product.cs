@@ -1,13 +1,15 @@
-﻿namespace Autoglass.Domain;
+﻿namespace Autoglass.Domain.Entities;
 
 public class Product
 {
     public int Id { get; set; }
-    public string? Code { get; set; }
     public string? Description { get; set; }
     public ProductStatus Status { get; set; }
-    public DateRange? DateRange { get; set; }
-    public Vendor? Vendor { get; set; }
+    public DateTime ManufacturingDate { get; set; }
+    public DateTime ExpirationDate { get; set; }
+    public int SupplierId { get; set; }
+
+    virtual public Supplier? Vendor { get; set; }
 }
 
 public enum ProductStatus
