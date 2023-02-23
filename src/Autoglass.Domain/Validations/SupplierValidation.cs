@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Autoglass.Domain.Validations;
 
-public class VendorValidation : AbstractValidator<Supplier>
+public class SupplierValidation : AbstractValidator<Supplier>
 {
-    public VendorValidation()
+    public SupplierValidation()
     {
         RuleFor(f => f.Description)
             .NotEmpty().WithMessage("A descrição do fornecedor é obrigatória.")
