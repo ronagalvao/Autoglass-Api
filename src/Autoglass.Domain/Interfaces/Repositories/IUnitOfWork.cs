@@ -1,7 +1,6 @@
-namespace Autoglass.Domain.Entities
+namespace Autoglass.Domain.Entities;
+
+public interface IUnitOfWork : IDisposable
 {
-    public interface IUnitOfWork : IDisposable
-    {
-        Task<int> CommitAsync();
-    }
+    Task<int> CommitAsync();
 }

@@ -4,11 +4,8 @@ using Autoglass.Application.Dtos;
 using Autoglass.Application.Interfaces;
 using Autoglass.Domain.Entities;
 using Autoglass.Domain.Validations;
-
 using AutoMapper;
-
 using Microsoft.AspNetCore.Mvc;
-
 using Moq;
 
 namespace Autoglass.UnitTests.API.Controllers;

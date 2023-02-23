@@ -2,77 +2,75 @@ using Autoglass.Domain.Entities;
 using Autoglass.Domain.Interfaces.Repositories;
 using Autoglass.Infrastructure.Context;
 using AutoMapper;
-
 using Microsoft.EntityFrameworkCore;
 
-namespace Autoglass.Infrastructure.Repositories
+namespace Autoglass.Infrastructure.Repositories;
+
+public class ProductRepository : IProductRepository
 {
-    public class ProductRepository : IProductRepository
+    private readonly AppDbContext _context;
+    private readonly IMapper _mapper;
+
+    public ProductRepository(AppDbContext context, IMapper mapper)
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
+        _context = context;
+        _mapper = mapper;
+    }
 
-        public ProductRepository(AppDbContext context, IMapper mapper)
+    public async Task UpdateAsync(Product product)
+    {
+        var entity = await _context.Products.FindAsync(product.Id);
+
+        _mapper.Map(product, entity);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task AddAsync(Product product)
+    {
+        await _context.Products.AddAsync(_mapper.Map<Product>(product));
+        await _context.SaveChangesAsync();
+    }
+    public async Task<Product> GetByIdAsync(int id)
+    {
+        var entity = await _context.Products.FindAsync(id);
+        return _mapper.Map<Product>(entity);
+    }
+
+    public async Task<List<Product>> GetFilteredAsync(string? description, DateTime? manufacturingDate, DateTime? expirationDate)
+    {
+        var query = _context.Products.AsQueryable();
+
+        if (!string.IsNullOrEmpty(description))
         {
-            _context = context;
-            _mapper = mapper;
+            query = query.Where(x => x.Description.Contains(description));
         }
 
-        public async Task UpdateAsync(Product product)
+        if (manufacturingDate != null)
         {
-            var entity = await _context.Products.FindAsync(product.Id);
-
-            _mapper.Map(product, entity);
-            await _context.SaveChangesAsync();
+            Predicate<Product> manufacturingPredicate = p => p.ManufacturingDate >= manufacturingDate;
+            query = query.Where(p => manufacturingPredicate(p));
         }
 
-        public async Task AddAsync(Product product)
+        if (expirationDate != null)
         {
-            await _context.Products.AddAsync(_mapper.Map<Product>(product));
-            await _context.SaveChangesAsync();
-        }
-        public async Task<Product> GetByIdAsync(int id)
-        {
-            var entity = await _context.Products.FindAsync(id);
-            return _mapper.Map<Product>(entity);
+            Predicate<Product> expirationPredicate = p => p.ExpirationDate <= expirationDate;
+            query = query.Where(p => expirationPredicate(p));
         }
 
-        public async Task<List<Product>> GetFilteredAsync(string? description, DateTime? manufacturingDate, DateTime? expirationDate)
+        var entities = await query.ToListAsync();
+        return _mapper.Map<List<Product>>(entities);
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var entity = await _context.Products.FindAsync(id);
+
+        if (entity == null)
         {
-            var query = _context.Products.AsQueryable();
-
-            if (!string.IsNullOrEmpty(description))
-            {
-                query = query.Where(x => x.Description.Contains(description));
-            }
-
-            if (manufacturingDate != null)
-            {
-                Predicate<Product> manufacturingPredicate = p => p.ManufacturingDate >= manufacturingDate;
-                query = query.Where(p => manufacturingPredicate(p));
-            }
-
-            if (expirationDate != null)
-            {
-                Predicate<Product> expirationPredicate = p => p.ExpirationDate <= expirationDate;
-                query = query.Where(p => expirationPredicate(p));
-            }
-
-            var entities = await query.ToListAsync();
-            return _mapper.Map<List<Product>>(entities);
+            return;
         }
 
-        public async Task DeleteAsync(int id)
-        {
-            var entity = await _context.Products.FindAsync(id);
-
-            if (entity == null)
-            {
-                return;
-            }
-
-            entity.Status = ProductStatus.Inactive;
-            await _context.SaveChangesAsync();
-        }
+        entity.Status = ProductStatus.Inactive;
+        await _context.SaveChangesAsync();
     }
 }

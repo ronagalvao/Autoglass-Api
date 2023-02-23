@@ -1,16 +1,14 @@
 using Autoglass.Domain.Entities;
-
 using FluentValidation;
 
-namespace Autoglass.Domain.Validations
+namespace Autoglass.Domain.Validations;
+
+public class ProductValidation : AbstractValidator<Product>
 {
-    public class ProductValidation : AbstractValidator<Product>
+    public ProductValidation()
     {
-        public ProductValidation()
-        {
-            RuleFor(p => p.ManufacturingDate)
-                .NotEmpty().WithMessage("A data de fabricação do produto é obrigatória.")
-                .LessThan(p => p.ExpirationDate).WithMessage("A data de fabricação não pode ser maior ou igual à data de validade.");
-        }
+        RuleFor(p => p.ManufacturingDate)
+            .NotEmpty().WithMessage("A data de fabricação do produto é obrigatória.")
+            .LessThan(p => p.ExpirationDate).WithMessage("A data de fabricação não pode ser maior ou igual à data de validade.");
     }
 }

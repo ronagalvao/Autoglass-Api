@@ -2,7 +2,6 @@ using Autoglass.Application.Interfaces;
 using Autoglass.Application.Services;
 using Autoglass.Domain.Entities;
 using Autoglass.Domain.Interfaces.Repositories;
-
 using Moq;
 
 namespace Autoglass.UnitTests.Applications.Services;

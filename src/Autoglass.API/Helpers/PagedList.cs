@@ -1,6 +1,6 @@
-namespace Autoglass.API.Helpers
-{
-    public class PagedList<T>
+namespace Autoglass.API.Helpers;
+
+public class PagedList<T>
 {
     public int PageNumber { get; }
     public int PageSize { get; }
@@ -16,6 +16,4 @@ namespace Autoglass.API.Helpers
         TotalItems = totalItems;
         Items = items;
     }
-}
-
 }

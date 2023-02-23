@@ -2,14 +2,13 @@ using Autoglass.Application.Dtos;
 using Autoglass.Domain.Entities;
 using AutoMapper;
 
-namespace Autoglass.Application.Mappings
+namespace Autoglass.Application.Mappings;
+
+public class AutoMapperProfile : Profile
 {
-    public class AutoMapperProfile : Profile
+    public AutoMapperProfile()
     {
-        public AutoMapperProfile()
-        {
-            CreateMap<Product, ProductDto>().ReverseMap();
-            CreateMap<Supplier, SupplierDto>().ReverseMap();
-        }
+        CreateMap<Product, ProductDto>().ReverseMap();
+        CreateMap<Supplier, SupplierDto>().ReverseMap();
     }
 }
