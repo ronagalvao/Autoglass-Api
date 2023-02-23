@@ -88,7 +88,7 @@ public class ProductsController : ControllerBase
 
         await _productService.UpdateProductAsync(product);
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpDelete("{id}")]
@@ -96,6 +96,6 @@ public class ProductsController : ControllerBase
     {
         await _productService.DeleteProductAsync(id);
 
-        return NoContent();
+        return Ok();
     }
 }
