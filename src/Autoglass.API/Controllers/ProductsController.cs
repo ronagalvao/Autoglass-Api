@@ -2,7 +2,12 @@ using Autoglass.API.Helpers;
 using Autoglass.Application.Dtos;
 using Autoglass.Application.Interfaces;
 using Autoglass.Domain.Entities;
+using Autoglass.Domain.Validations;
+
 using AutoMapper;
+
+using FluentValidation;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace Autoglass.API.Controllers
@@ -13,14 +18,21 @@ namespace Autoglass.API.Controllers
     {
         private readonly IProductService _productService;
         private readonly IMapper _mapper;
+        private readonly ProductValidation _productValidation;
 
-        public ProductsController(IProductService productService, IMapper mapper)
+        public ProductsController
+        (
+            IProductService productService, 
+            IMapper mapper, 
+            ProductValidation productValidation
+        )
         {
             _productService = productService;
             _mapper = mapper;
+            _productValidation = productValidation;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("ProductById/{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
             var product = await _productService.GetProductByIdAsync(id);
@@ -34,15 +46,16 @@ namespace Autoglass.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProducts([FromQuery] string? description, [FromQuery] DateTime? manufacturingDate, [FromQuery] DateTime? expirationDate, [FromQuery] int? pageNumber, [FromQuery] int? pageSize)
+        [Route("FilteredProduct")]
+        public async Task<IActionResult> GetFilteredProduct([FromQuery] string? description, [FromQuery] DateTime? manufacturingDate, [FromQuery] DateTime? expirationDate, [FromQuery] int? pageNumber, [FromQuery] int? pageSize)
         {
             pageNumber ??= 1;
             pageSize ??= 10;
 
-            var products = await _productService.GetProductsAsync(description, manufacturingDate, expirationDate);
+            var products = await _productService.GetFilteredProductAsync(description, manufacturingDate, expirationDate);
 
             var totalProducts = products.Count();
-            
+
             var productsPage = products.Skip((pageNumber.Value - 1) * pageSize.Value).Take(pageSize.Value);
 
             var productDtos = _mapper.Map<IEnumerable<ProductDto>>(productsPage);
@@ -53,8 +66,12 @@ namespace Autoglass.API.Controllers
         }
 
         [HttpPost]
+        [Route("AddProduct")]
         public async Task<IActionResult> AddProduct([FromBody] ProductDto productDto)
         {
+            IValidator<Product> validator = new ProductValidation();
+            validator.ValidateAndThrow((Product)validator);
+
             var product = _mapper.Map<Product>(productDto);
 
             await _productService.AddProductAsync(product);
@@ -62,11 +79,14 @@ namespace Autoglass.API.Controllers
             return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("UpdateProduct/{id}")]
         public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDto productDto)
         {
             if (id != productDto.Id)
                 return BadRequest();
+
+            IValidator<Product> validator = new ProductValidation();
+            validator.ValidateAndThrow((Product)validator);
 
             var product = _mapper.Map<Product>(productDto);
 
