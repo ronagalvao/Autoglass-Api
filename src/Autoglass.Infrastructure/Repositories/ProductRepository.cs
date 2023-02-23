@@ -37,13 +37,7 @@ namespace Autoglass.Infrastructure.Repositories
             return _mapper.Map<Product>(entity);
         }
 
-        public async Task<List<Product>> GetAllAsync()
-        {
-            var entities = await _context.Products.ToListAsync();
-            return _mapper.Map<List<Product>>(entities);
-        }
-
-        public async Task<List<Product>> GetByDescriptionAsync(string description, int pageIndex, int pageSize)
+        public async Task<List<Product>> GetFilteredAsync(string? description, DateTime? manufacturingDate, DateTime? expirationDate)
         {
             var query = _context.Products.AsQueryable();
 
@@ -52,7 +46,19 @@ namespace Autoglass.Infrastructure.Repositories
                 query = query.Where(x => x.Description.Contains(description));
             }
 
-            var entities = await query.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToListAsync();
+            if (manufacturingDate != null)
+            {
+                Predicate<Product> manufacturingPredicate = p => p.ManufacturingDate >= manufacturingDate;
+                query = query.Where(p => manufacturingPredicate(p));
+            }
+
+            if (expirationDate != null)
+            {
+                Predicate<Product> expirationPredicate = p => p.ExpirationDate <= expirationDate;
+                query = query.Where(p => expirationPredicate(p));
+            }
+
+            var entities = await query.ToListAsync();
             return _mapper.Map<List<Product>>(entities);
         }
 
