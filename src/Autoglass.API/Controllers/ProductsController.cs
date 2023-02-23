@@ -83,9 +83,8 @@ public class ProductsController : ControllerBase
             return BadRequest();
 
         IValidator<Product> validator = new ProductValidation();
-        validator.ValidateAndThrow((Product)validator);
-
         var product = _mapper.Map<Product>(productDto);
+        validator.ValidateAndThrow(product);
 
         await _productService.UpdateProductAsync(product);
 
