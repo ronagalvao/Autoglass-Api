@@ -7,6 +7,8 @@ namespace Autoglass.Infrastructure.Context
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
+            Products = Set<Product>();
+            Suppliers = Set<Supplier>();
         }
 
         public DbSet<Product> Products { get; set; }
@@ -15,9 +17,12 @@ namespace Autoglass.Infrastructure.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Aqui pode ser definido o mapeamento das entidades e suas propriedades
-            // Exemplo: modelBuilder.Entity<Produto>().Property(p => p.Nome).HasMaxLength(100);
             base.OnModelCreating(modelBuilder);
+
+            if (modelBuilder is null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
         }
     }
 }
