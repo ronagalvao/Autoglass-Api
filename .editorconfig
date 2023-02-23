@@ -76,6 +76,14 @@ dotnet_remove_unnecessary_suppression_exclusions = none
 
 #### C# Coding Conventions ####
 [*.cs]
+csharp_style_preserve_single_line_blocks = true
+csharp_style_preserve_single_line_statements = true
+csharp_style_require_braces = allman
+csharp_style_require_space_after_keywords_in_control_flow_statements = true
+csharp_style_require_space_before_open_square_brackets = true
+csharp_style_var_for_built_in_types = false
+dotnet_style_qualification_for_field = false:silent
+dotnet_style_qualification_for_property = false:silent
 
 # var preferences
 csharp_style_var_elsewhere = false:silent
