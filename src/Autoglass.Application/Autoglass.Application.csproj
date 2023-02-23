@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Autoglass.Domain\Autoglass.Domain.csproj"/>
+    <ProjectReference Include="..\Autoglass.Domain\Autoglass.Domain.csproj" />
   </ItemGroup>
 
 </Project>
