@@ -5,6 +5,8 @@ using Autoglass.Application.Interfaces;
 using Autoglass.Domain.Entities;
 using Autoglass.Domain.Validations;
 using AutoMapper;
+using FluentAssertions;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -153,6 +155,95 @@ public class ProductControllerTests
             Assert.Equal(pageNumber, pagedList.PageNumber);
             Assert.Equal(pageSize, pagedList.PageSize);
             Assert.Equal(productDtos, pagedList.Items);
+        }
+
+        [Fact]
+        public async Task UpdateProduct_WithMatchingIdAndProductDto_ReturnsOkResult()
+        {
+            // Arrange
+            int id = 1;
+            var productDto = new ProductDto { Id = 1, Description = "Test product", ManufacturingDate = DateTime.Now, ExpirationDate = DateTime.Now.AddDays(30) };
+            
+            // Arrange
+            var productId = 1;
+            var productDescription = "Test Product";
+            var status = ProductStatus.Active;
+            var manufacturingDate = DateTime.Now;
+            var expirationDate = DateTime.Now.AddDays(30);
+            var supplierId = 1;
+            var supplierDescription = "Test Supplier";
+            var supplierDocument = "1234567890";
+
+            var product = new Product
+            (
+                productId,
+                productDescription,
+                status,
+                manufacturingDate,
+                expirationDate,
+                supplierId,
+                supplierDescription,
+                supplierDocument
+            );
+
+            _mapperMock.Setup(m => m.Map<Product>(productDto)).Returns(product);
+
+            // Act
+            var result = await _controller.UpdateProduct(id, productDto);
+
+            // Assert
+            result.Should().BeOfType<OkResult>();
+            _productServiceMock.Verify(s => s.UpdateProductAsync(product), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateProduct_WithNonMatchingIdAndProductDto_ReturnsBadRequest()
+        {
+            // Arrange
+            int id = 1;
+            var productDto = new ProductDto { Id = 2, Description = "Test product", ManufacturingDate = DateTime.Now, ExpirationDate = DateTime.Now.AddDays(30) };
+
+            // Act
+            var result = await _controller.UpdateProduct(id, productDto);
+
+            // Assert
+            result.Should().BeOfType<BadRequestResult>();
+            _productServiceMock.Verify(s => s.UpdateProductAsync(It.IsAny<Product>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateProduct_WithInvalidProductDto_ThrowsValidationException()
+        {
+            // Arrange
+            int id = 1;
+            var productDto = new ProductDto { Id = 1, Description = "Test product", ManufacturingDate = DateTime.Now, ExpirationDate = DateTime.Now.AddDays(30) };
+            
+            // Arrange
+            var productId = 1;
+            var productDescription = "Test Product";
+            var status = ProductStatus.Active;
+            var manufacturingDate = new DateTime(2022, 01, 01);
+            var expirationDate = new DateTime(2022, 01, 01);
+            var supplierId = 1;
+            var supplierDescription = "Test Supplier";
+            var supplierDocument = "1234567890";
+
+            var product = new Product
+            (
+                productId,
+                productDescription,
+                status,
+                manufacturingDate,
+                expirationDate,
+                supplierId,
+                supplierDescription,
+                supplierDocument
+            );
+
+            _mapperMock.Setup(m => m.Map<Product>(productDto)).Returns(product);
+
+            //Act & Assert
+            await Assert.ThrowsAsync<ValidationException>(() => _controller.UpdateProduct(id, productDto));
         }
     }
 }
