@@ -1,27 +1,25 @@
-using Autoglass.Application.Mappings;
+using Autoglass.Application.Interfaces;
 using Autoglass.Application.Services;
 using Autoglass.Domain.Entities;
 using Autoglass.Domain.Interfaces.Repositories;
 
-using AutoMapper;
-
 using Moq;
 
-namespace UnitTests;
+namespace Autoglass.UnitTests.Applications.Services;
 
 public class ProductServiceTests
 {
 
     private readonly Mock<IProductRepository> _mockProductRepository;
-    private readonly IMapper _mapper;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    private readonly IProductService _productService;
 
     public ProductServiceTests()
     {
         _mockProductRepository = new Mock<IProductRepository>();
-        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<AutoMapperProfile>());
-        _mapper = new Mapper(mapperConfig);
-        _unitOfWork = new Mock<IUnitOfWork>().Object;
+        _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _productService = new ProductService(_mockProductRepository.Object, _mockUnitOfWork.Object);
+
     }
 
     [Fact]
@@ -49,7 +47,7 @@ public class ProductServiceTests
             supplierDocument
         );
         _mockProductRepository.Setup(r => r.GetByIdAsync(productId)).ReturnsAsync(product);
-        var productService = new ProductService(_mockProductRepository.Object, _unitOfWork);
+        var productService = new ProductService(_mockProductRepository.Object, _mockUnitOfWork.Object);
 
         // Act
         var result = await productService.GetProductByIdAsync(productId);
@@ -66,7 +64,7 @@ public class ProductServiceTests
         // Arrange
         var productId = 1;
         _mockProductRepository.Setup(r => r.GetByIdAsync(productId)).ReturnsAsync((Product?)null!);
-        var productService = new ProductService(_mockProductRepository.Object, _unitOfWork);
+        var productService = new ProductService(_mockProductRepository.Object, _mockUnitOfWork.Object);
 
         // Act
         var result = await productService.GetProductByIdAsync(productId);
@@ -78,6 +76,7 @@ public class ProductServiceTests
     [Fact]
     public async Task GetFilteredProductAsync_ReturnsFilteredProducts_WhenProductsExist()
     {
+        // Arrange
         var productId = 1;
         var productDescription = "Test Product";
         var status = ProductStatus.Active;
@@ -87,7 +86,6 @@ public class ProductServiceTests
         var supplierDescription = "Test Supplier";
         var supplierDocument = "1234567890";
 
-        // Arrange
         var product1 = new Product
         (
             productId,
@@ -117,7 +115,7 @@ public class ProductServiceTests
         var filteredManufacturingDate = new DateTime(2022, 01, 01);
         var filteredExpirationDate = new DateTime(2022, 02, 01);
         _mockProductRepository.Setup(r => r.GetFilteredAsync(filteredDescription, filteredManufacturingDate, filteredExpirationDate)).ReturnsAsync(productList);
-        var productService = new ProductService(_mockProductRepository.Object, _unitOfWork);
+        var productService = new ProductService(_mockProductRepository.Object, _mockUnitOfWork.Object);
 
         // Act
         var result = await productService.GetFilteredProductAsync(filteredDescription, filteredManufacturingDate, filteredExpirationDate);
@@ -128,5 +126,87 @@ public class ProductServiceTests
         Assert.Equal(2, ((List<Product>)result).Count);
         Assert.Contains(product1, (List<Product>)result);
         Assert.Contains(product2, (List<Product>)result);
+    }
+
+    [Fact]
+    public async Task AddProductAsync_ShouldCallRepositoryAndUnitOfWork()
+    {
+        //Arrange
+        var productId = 1;
+        var productDescription = "Test Product";
+        var status = ProductStatus.Active;
+        var manufacturingDate = new DateTime(2022, 01, 01);
+        var expirationDate = new DateTime(2022, 01, 01);
+        var supplierId = 1;
+        var supplierDescription = "Test Supplier";
+        var supplierDocument = "1234567890";
+
+        // Arrange
+        var product = new Product
+        (
+            productId,
+            productDescription,
+            status,
+            manufacturingDate,
+            expirationDate,
+            supplierId,
+            supplierDescription,
+            supplierDocument
+        );
+
+        //Act
+        await _productService.AddProductAsync(product);
+
+        //Assert
+        _mockProductRepository.Verify(x => x.AddAsync(product), Times.Once);
+        _mockUnitOfWork.Verify(x => x.CommitAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateProductAsync_ShouldCallRepositoryAndUnitOfWork()
+    {
+        //Arrange
+        var productId = 1;
+        var productDescription = "Test Product";
+        var status = ProductStatus.Active;
+        var manufacturingDate = new DateTime(2022, 01, 01);
+        var expirationDate = new DateTime(2022, 01, 01);
+        var supplierId = 1;
+        var supplierDescription = "Test Supplier";
+        var supplierDocument = "1234567890";
+
+        // Arrange
+        var product = new Product
+        (
+            productId,
+            productDescription,
+            status,
+            manufacturingDate,
+            expirationDate,
+            supplierId,
+            supplierDescription,
+            supplierDocument
+        );
+
+        //Act
+        await _productService.UpdateProductAsync(product);
+
+        //Assert
+        _mockProductRepository.Verify(x => x.UpdateAsync(product), Times.Once);
+        _mockUnitOfWork.Verify(x => x.CommitAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteProductAsync_ShouldCallRepositoryAndUnitOfWork()
+    {
+        //Arrange
+        var id = 1;
+
+        //Act
+        await _productService.DeleteProductAsync(id);
+
+        //Assert
+        _mockProductRepository.Verify(x => x.DeleteAsync(id), Times.Once);
+        _mockUnitOfWork.Verify(x => x.CommitAsync(), Times.Once);
     }
 }
