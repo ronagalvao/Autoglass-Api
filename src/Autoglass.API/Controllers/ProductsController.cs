@@ -66,10 +66,9 @@ public class ProductsController : ControllerBase
     [Route("AddProduct")]
     public async Task<IActionResult> AddProduct([FromBody] ProductDto productDto)
     {
-        IValidator<Product> validator = new ProductValidation();
-        validator.ValidateAndThrow((Product)validator);
-
         var product = _mapper.Map<Product>(productDto);
+
+        _productValidation.ValidateAndThrow(product);
 
         await _productService.AddProductAsync(product);
 
@@ -82,9 +81,9 @@ public class ProductsController : ControllerBase
         if (id != productDto.Id)
             return BadRequest();
 
-        IValidator<Product> validator = new ProductValidation();
         var product = _mapper.Map<Product>(productDto);
-        validator.ValidateAndThrow(product);
+        
+        _productValidation.ValidateAndThrow(product);
 
         await _productService.UpdateProductAsync(product);
 
