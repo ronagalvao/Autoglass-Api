@@ -4,7 +4,11 @@ public class Product
 {
     public int Id { get; set; }
     public string Description { get; set; }
-    public ProductStatus Status { get; set; }
+    public ProductStatus Status
+    {
+        get => (ProductStatus)_status;
+        set => _status = (int)value;
+    }
     public DateTime ManufacturingDate { get; set; }
     public DateTime ExpirationDate { get; set; }
     public int SupplierId { get; set; }
@@ -22,9 +26,11 @@ public class Product
         SupplierDescription = supplierDescription;
         SupplierDocument = supplierDocument;
     }
+
+    private int _status;
 }
 
 public enum ProductStatus
 {
-    Active, Inactive
+    Inactive, Active, Deleted
 }
