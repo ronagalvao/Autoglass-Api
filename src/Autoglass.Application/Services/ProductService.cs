@@ -44,4 +44,17 @@ public class ProductService : IProductService
         await _productRepository.DeleteAsync(id);
         await _unitOfWork.CommitAsync();
     }
+
+    public async Task<string> CanBeUpdatedAsync(int id)
+    {
+        var erro = "";
+
+        if (await _productRepository.GetByIdAsync(id) == null)
+        {
+            erro = $"Produto com código {id} não foi encontrado.";
+            return erro;
+        }
+
+        return erro;
+    }
 }

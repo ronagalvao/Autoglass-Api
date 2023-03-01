@@ -78,10 +78,11 @@ public class ProductsController : ControllerBase
     [HttpPut("UpdateProduct/{id}")]
     public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDto productDto)
     {
-        if (id != productDto.Id)
-            return BadRequest();
-
         var product = _mapper.Map<Product>(productDto);
+        var findedProduct = await _productService.CanBeUpdatedAsync(product.Id);
+
+        if (id != productDto.Id || findedProduct == null)
+            return BadRequest(findedProduct);
         
         _productValidation.ValidateAndThrow(product);
 
