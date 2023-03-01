@@ -22,6 +22,8 @@ public class ProductRepository : IProductRepository
         var entity = await _context.Products.FindAsync(product.Id);
 
         _mapper.Map(product, entity);
+        
+        _context.Update(entity!);
         await _context.SaveChangesAsync();
     }
 
@@ -30,6 +32,7 @@ public class ProductRepository : IProductRepository
         await _context.Products.AddAsync(_mapper.Map<Product>(product));
         await _context.SaveChangesAsync();
     }
+
     public async Task<Product> GetByIdAsync(int id)
     {
         var entity = await _context.Products.FindAsync(id);
@@ -70,7 +73,7 @@ public class ProductRepository : IProductRepository
             return;
         }
 
-        entity.Status = ProductStatus.Inactive;
+        entity.Status = ProductStatus.Deleted;
         await _context.SaveChangesAsync();
     }
 }
