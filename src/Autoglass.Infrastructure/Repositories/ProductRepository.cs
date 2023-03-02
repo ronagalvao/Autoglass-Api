@@ -45,7 +45,7 @@ public class ProductRepository : IProductRepository
 
         if (!string.IsNullOrEmpty(description))
         {
-            query = query.Where(x => x.Description.Contains(description));
+            query = query.Where(x => x.Description!.Contains(description));
         }
 
         if (manufacturingDate != null)
