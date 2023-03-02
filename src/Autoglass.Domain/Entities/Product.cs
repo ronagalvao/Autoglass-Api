@@ -26,7 +26,6 @@ public class Product
         SupplierDescription = supplierDescription;
         SupplierDocument = supplierDocument;
     }
-
     private int _status;
 }
 
