@@ -36,3 +36,5 @@ app.UseCors(
 );
 
 app.Run();
+
+public partial class Program { }
