@@ -5,11 +5,12 @@ using Autoglass.Infrastructure.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
+    .AddCors()
     .AddProductContext(builder.Configuration)
     .AddServices()
     .AddMappers();
 
-builder.Services.AddControllers();
+builder.WebHost.ConfigureKestrel(options => options.AllowSynchronousIO = true);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -22,8 +23,16 @@ if(app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseAuthorization();
+app.AddPathExtensions();
 
-app.MapControllers();
+app.UseRouting();
+
+app.UseHttpsRedirection();
+app.UseCors(
+    builder => builder
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+);
 
 app.Run();
