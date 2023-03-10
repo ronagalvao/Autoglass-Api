@@ -1,5 +1,4 @@
 using Autoglass.API.Extensions;
-using Autoglass.Application.Extensions;
 using Autoglass.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
