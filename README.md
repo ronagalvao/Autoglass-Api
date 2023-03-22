@@ -1,2 +1,1 @@
-# Autoglass-Api
-Desafio prático de Programação - Autoglass
+# Stockmate-Api

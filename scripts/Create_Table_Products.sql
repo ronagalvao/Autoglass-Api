@@ -2,7 +2,7 @@
 -- CREATE TABLE: Products
 -- -----------------------------------------------------
 
-CREATE TABLE [Autoglass].[dbo].[Products] (
+CREATE TABLE [Stockmate].[dbo].[Products] (
     [Id] INT IDENTITY(1,1) PRIMARY KEY,                 -- Código do produto (sequencial e não nulo)          
     [Description] NVARCHAR(200) NOT NULL,               -- Descrição do produto (não nulo)
     [Status] INT NOT NULL,                              -- Situação do produto (Ativo ou Inativo)

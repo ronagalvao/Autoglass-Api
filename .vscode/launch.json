@@ -5,14 +5,14 @@
             // Use IntelliSense to find out which attributes exist for C# debugging
             // Use hover for the description of the existing attributes
             // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-            "name": "autoglass-api",
+            "name": "stockmate-api",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/Autoglass.API/bin/Debug/net7.0/Autoglass.API.dll",
+            "program": "${workspaceFolder}/src/Stockmate.Api/bin/Debug/net7.0/Stockmate.Api.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/Autoglass.API",
+            "cwd": "${workspaceFolder}/src/Stockmate.Api",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "enableStepFiltering": false,
